@@ -43,27 +43,32 @@ class Reading:
 
         with open("last_reading.json", "r") as f_read:
             last_reading = json.load(f_read)
-            for reading in last_reading:
-                if reading != "time_str":
-                    if getattr(self, reading) > last_reading[reading]:
-                        self.changes[reading] = "inc"
-                    elif getattr(self, reading) < last_reading[reading]:
-                        self.changes[reading] = "dec"
-                    else:
-                        self.changes[reading] = "same"
-
+            self.changes = last_reading["changes"] # populate changes from file for consistency
+            if last_reading["reading"]["time_str"] != self.time_str: # if no new reading, don't change anything
+                for r in last_reading["reading"]:
+                    if r != "time_str":
+                        if getattr(self, r) > last_reading["reading"][r]:
+                            self.changes[r] = "inc"
+                        elif getattr(self, r) < last_reading["reading"][r]:
+                            self.changes[r] = "dec"
+                        else:
+                            self.changes[r] = "same"
+                with open("last_reading.json", "w") as f_write:
+                    new_reading = {
+                        "reading": {
+                        "time_str": self.time_str,
+                        "temperature": self.temperature,
+                        "pressure": self.pressure,
+                        "humidity": self.humidity,
+                        "luminance": self.luminance,
+                        "rain": self.rain,
+                        "wind_speed": self.wind_speed
+                        },
+                        "changes": self.changes
+                    }
+                    json.dump(new_reading, f_write, ensure_ascii = False, indent = 4)
             print(self.changes)
         
-        with open("last_reading.json", "w") as f_write:
-            new_reading = {
-                "time_str": self.time_str,
-                "temperature": self.temperature,
-                "pressure": self.pressure,
-                "humidity": self.humidity,
-                "luminance": self.luminance,
-                "rain": self.rain,
-                "wind_speed": self.wind_speed
-            }
-            json.dump(new_reading, f_write, ensure_ascii = False, indent = 4)
+        
 
 
