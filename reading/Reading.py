@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 import pytz
 
@@ -25,4 +26,44 @@ class Reading:
             360: "S",
         }
         self.wind_direction = compass_dirs[data[0]["readings"]["wind_direction"]]
+        self.changes = { # These should always be either "inc", "dec", or "same"
+            "temperature": "same",
+            "pressure": "same",
+            "humidity": "same",
+            "luminance": "same",
+            "rain": "same",
+            "wind_speed": "same"
+        }
+
+    def get_changes_and_save(self):
+        """Compare current reading to previous
+        Update self.changes with increases and decreases
+        Save reading to last_reading.json or create if doesn't exist
+        """
+
+        with open("last_reading.json", "r") as f_read:
+            last_reading = json.load(f_read)
+            for reading in last_reading:
+                if reading != "time_str":
+                    if getattr(self, reading) > last_reading[reading]:
+                        self.changes[reading] = "inc"
+                    elif getattr(self, reading) < last_reading[reading]:
+                        self.changes[reading] = "dec"
+                    else:
+                        self.changes[reading] = "same"
+
+            print(self.changes)
+        
+        with open("last_reading.json", "w") as f_write:
+            new_reading = {
+                "time_str": self.time_str,
+                "temperature": self.temperature,
+                "pressure": self.pressure,
+                "humidity": self.humidity,
+                "luminance": self.luminance,
+                "rain": self.rain,
+                "wind_speed": self.wind_speed
+            }
+            json.dump(new_reading, f_write, ensure_ascii = False, indent = 4)
+
 

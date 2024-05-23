@@ -16,6 +16,7 @@ API_URL = os.environ.get("WEATHERVANE_API_URL")
 r = requests.get(url= API_URL)
 data = r.json()
 reading = Reading(data)
+reading.get_changes_and_save()
 display = Display(reading)
 
 try:
