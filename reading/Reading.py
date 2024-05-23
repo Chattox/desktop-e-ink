@@ -1,6 +1,9 @@
 import json
+import logging
 from datetime import datetime
 import pytz
+
+logger = logging.getLogger(__name__)
 
 class Reading:
     """Handle and format reading data from API response"""
@@ -67,8 +70,8 @@ class Reading:
                         "changes": self.changes
                     }
                     json.dump(new_reading, f_write, ensure_ascii = False, indent = 4)
+            else:
+                logging.warn("Reading has not updated, possibly a missed upload?")
+
             print(self.changes)
         
-        
-
-
