@@ -2,6 +2,7 @@ from datetime import datetime
 import pytz
 
 class Reading:
+    """Handle and format reading data from API response"""
     def __init__(self, data):
         timestamp_obj = datetime.strptime(data[0]["timestamp"], "%Y-%m-%dT%H:%M:%SZ")
         aware_ts_obj = pytz.timezone("UTC").localize(timestamp_obj)
@@ -24,3 +25,4 @@ class Reading:
             360: "S",
         }
         self.wind_direction = compass_dirs[data[0]["readings"]["wind_direction"]]
+
