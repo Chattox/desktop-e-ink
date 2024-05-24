@@ -63,9 +63,9 @@ class Display:
         logger.info('Drawing reading display')
         # Create title, last reading time, and dividers
         self.draw_black.text((2, 2), 'Weathervane', font = self.font_header)
+        self.draw_black.text((138, 9), f'As of: {self.reading.time_str}', font = self.font_caption)
         self.draw_black.line((0, 26, 250, 26), fill = 0)
-        self.draw_black.text((2, 28), f'Time of reading: {self.reading.time_str}', font = self.font_caption)
-        self.draw_black.line((124, 42, 124, 122), fill = 0)
+        self.draw_black.line((124, 26, 124, 122), fill = 0)
 
         # Reading content
         line_spacing = 20
