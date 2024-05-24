@@ -61,19 +61,38 @@ class Display:
     def draw_reading(self):
         """Create and display reading image on e-ink display"""
         logger.info('Drawing reading display')
-        # Create title and reading text
+        # Create title, last reading time, and dividers
         self.draw_black.text((2, 2), 'Weathervane', font = self.font_header)
         self.draw_black.line((0, 26, 250, 26), fill = 0)
         self.draw_black.text((2, 28), f'Time of reading: {self.reading.time_str}', font = self.font_caption)
-        self.draw_black.text((18, 44), f'{self.reading.temperature} °C\n' +
-                              f'{self.reading.pressure} hPa\n' +
-                              f'{self.reading.humidity} %\n' +
-                              f'{self.reading.luminance} Lx', font = self.font_body)
-        self.draw_black.text((143, 44), f'{self.reading.rain} mm\n' +
-                                f'{self.reading.wind_speed} m/s\n' +
-                                f'{self.reading.wind_direction}', font = self.font_body)
-        self.draw_red.text((2, 44), 'T:\nP:\nH:\nL:\n', font = self.font_body)
-        self.draw_red.text((124, 44), 'R:\nW:\nD:', font = self.font_body)
+        self.draw_black.line((124, 42, 124, 122), fill = 0)
+
+        # Reading content
+        line_spacing = 20
+        red_l_start_x = 2
+        red_r_start_x = 128
+        blk_l_start_x = 18
+        blk_r_start_x = 147
+        start_y = 44
+
+        columns = ({
+            "temperature": ("T:", f"{self.reading.temperature} °C"),
+            "pressure": ("P:", f"{self.reading.pressure} hPA"),
+            "humidity": ("H:", f"{self.reading.humidity} %"),
+            "luminance": ("L:", f"{self.reading.luminance} Lx"),
+        },
+        {
+            "rain": ("R:", f"{self.reading.rain} mm"),
+            "wind_speed": ("W:", f"{self.reading.wind_speed} m/s"),
+            "wind_direction": ("D:", f"{self.reading.wind_direction}")
+        })
+
+        # Programatically create reading display
+        for i, column in enumerate(columns):
+            for j, reading in enumerate(column.items()):
+                self.draw_red.text((red_l_start_x if i == 0 else red_r_start_x, start_y + (j * line_spacing)), reading[1][0], font = self.font_body)
+                self.draw_black.text((blk_l_start_x if i == 0 else blk_r_start_x, start_y + (j * line_spacing)), reading[1][1], font = self.font_body)
+
 
         # Draw indicators
         self.draw_red.polygon(self.get_polygon_coords((114, 49), "inc"), fill = 0)
