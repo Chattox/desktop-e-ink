@@ -1,5 +1,9 @@
+import json
+import logging
 from datetime import datetime
 import pytz
+
+logger = logging.getLogger(__name__)
 
 class Reading:
     """Handle and format reading data from API response"""
@@ -25,4 +29,49 @@ class Reading:
             360: "S",
         }
         self.wind_direction = compass_dirs[data[0]["readings"]["wind_direction"]]
+        self.changes = { # These should always be either "inc", "dec", or "same"
+            "temperature": "same",
+            "pressure": "same",
+            "humidity": "same",
+            "luminance": "same",
+            "rain": "same",
+            "wind_speed": "same"
+        }
 
+    def get_changes_and_save(self):
+        """Compare current reading to previous
+        Update self.changes with increases and decreases
+        Save reading to last_reading.json or create if doesn't exist
+        """
+
+        with open("last_reading.json", "r") as f_read:
+            last_reading = json.load(f_read)
+            self.changes = last_reading["changes"] # populate changes from file for consistency
+            if last_reading["reading"]["time_str"] != self.time_str: # if no new reading, don't change anything
+                for r in last_reading["reading"]:
+                    if r != "time_str":
+                        if getattr(self, r) > last_reading["reading"][r]:
+                            self.changes[r] = "inc"
+                        elif getattr(self, r) < last_reading["reading"][r]:
+                            self.changes[r] = "dec"
+                        else:
+                            self.changes[r] = "same"
+                with open("last_reading.json", "w") as f_write:
+                    new_reading = {
+                        "reading": {
+                        "time_str": self.time_str,
+                        "temperature": self.temperature,
+                        "pressure": self.pressure,
+                        "humidity": self.humidity,
+                        "luminance": self.luminance,
+                        "rain": self.rain,
+                        "wind_speed": self.wind_speed
+                        },
+                        "changes": self.changes
+                    }
+                    json.dump(new_reading, f_write, ensure_ascii = False, indent = 4)
+            else:
+                logging.warn("Reading has not updated, possibly a missed upload?")
+
+            print(self.changes)
+        
