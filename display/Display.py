@@ -68,12 +68,15 @@ class Display:
         self.draw_black.line((124, 26, 124, 122), fill = 0)
 
         # Reading content
-        line_spacing = 20
+        line_spacing = 24
         red_l_start_x = 2
-        red_r_start_x = 128
+        red_r_start_x = 129
         blk_l_start_x = 18
-        blk_r_start_x = 147
-        start_y = 44
+        blk_r_start_x = 148
+        start_y = 30
+        ind_l_start_x = 114
+        ind_r_start_x = 240
+        ind_start_y = 36
 
         columns = ({
             "temperature": ("T:", f"{self.reading.temperature} °C"),
@@ -89,14 +92,13 @@ class Display:
 
         # Programatically create reading display
         for i, column in enumerate(columns):
-            for j, reading in enumerate(column.items()):
-                self.draw_red.text((red_l_start_x if i == 0 else red_r_start_x, start_y + (j * line_spacing)), reading[1][0], font = self.font_body)
-                self.draw_black.text((blk_l_start_x if i == 0 else blk_r_start_x, start_y + (j * line_spacing)), reading[1][1], font = self.font_body)
+            for j, readingData in enumerate(column.items()):
+                self.draw_red.text((red_l_start_x if i == 0 else red_r_start_x, start_y + (j * line_spacing)), readingData[1][0], font = self.font_body)
+                self.draw_black.text((blk_l_start_x if i == 0 else blk_r_start_x, start_y + (j * line_spacing)), readingData[1][1], font = self.font_body)
+                if readingData[0] != "wind_direction":
+                    self.draw_red.polygon(self.get_polygon_coords((ind_l_start_x if i == 0 else ind_r_start_x, ind_start_y + (j * line_spacing)), self.reading.changes[readingData[0]]), fill = 0)
 
-
-        # Draw indicators
-        self.draw_red.polygon(self.get_polygon_coords((114, 49), "inc"), fill = 0)
-
+        # Send image to e-ink display and draw
         self.epd.display(self.epd.getbuffer(self.BlackImage), self.epd.getbuffer(self.RedImage))
 
     def sleep(self, clear_display):
