@@ -58,8 +58,14 @@ class Display:
         self.epd.init()
         self.epd.Clear()
 
-    def draw_reading(self):
-        """Create and display reading image on e-ink display"""
+    def draw_reading(self, dev):
+        """Create and display reading image on e-ink display
+        
+        Args
+        -----
+        dev: `bool`
+            If true, will display image in window and not affect e-ink display
+        """
         logger.info('Drawing reading display')
         # Create title, last reading time, and dividers
         self.draw_black.text((2, 2), 'Weathervane', font = self.font_header)
@@ -98,8 +104,13 @@ class Display:
                 if readingData[0] != "wind_direction":
                     self.draw_red.polygon(self.get_polygon_coords((ind_l_start_x if i == 0 else ind_r_start_x, ind_start_y + (j * line_spacing)), self.reading.changes[readingData[0]]), fill = 0)
 
-        # Send image to e-ink display and draw
-        self.epd.display(self.epd.getbuffer(self.BlackImage), self.epd.getbuffer(self.RedImage))
+        # If dev == true, display in window
+        if dev:
+            dev_image = Image.composite(self.BlackImage, self.RedImage, self.RedImage)
+            dev_image.show()
+        else:
+            # Send image to e-ink display and draw
+            self.epd.display(self.epd.getbuffer(self.BlackImage), self.epd.getbuffer(self.RedImage))
 
     def sleep(self, clear_display):
         """Set the e-ink display to sleep mode and optionally clear display
