@@ -21,7 +21,7 @@ display = Display(reading)
 
 try:
     # If dev arg passed, skip everything else and just draw_reading in dev mode
-    if sys.argv[1] == "dev":
+    if len(sys.argv) > 1 and sys.argv[1] == "dev":
         display.draw_reading(True)
     else:
         display.init_display()
