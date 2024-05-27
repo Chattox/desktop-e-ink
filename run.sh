@@ -1,4 +1,8 @@
 #!/bin/bash
 
-source .venv/bin/activate
-python main.py
+while [ true ]
+do
+    source .venv/bin/activate
+    python main.py
+    sleep 4500
+done
