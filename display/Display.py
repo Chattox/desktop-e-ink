@@ -158,8 +158,11 @@ class Display:
             dev_image = Image.composite(self.BlackImage, self.RedImage, self.RedImage)
             dev_image.show()
         else:
+            # Flip images to compensate for display orientation in the case I'm using
+            BlackDisplayImg = self.BlackImage.transpose(Image.ROTATE_180)
+            RedDisplayImg = self.RedImage.transpose(Image.ROTATE_180)
             # Send image to e-ink display and draw
-            self.epd.display(self.epd.getbuffer(self.BlackImage), self.epd.getbuffer(self.RedImage))
+            self.epd.display(self.epd.getbuffer(BlackDisplayImg), self.epd.getbuffer(RedDisplayImg))
 
     def sleep(self, clear_display):
         """Set the e-ink display to sleep mode and optionally clear display
