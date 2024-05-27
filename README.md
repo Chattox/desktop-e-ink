@@ -8,9 +8,10 @@ If running in a virtual environment, will need access to global packages to acce
 ```zsh
 python -m venv --system-site-packages ./.venv
 cd .venv/bin
-source $activate
+source activate
 cd ../..
-python pip install -r requirements.txt
+pip install -r requirements.txt
+pip install .
 ```
 
 ## Running
