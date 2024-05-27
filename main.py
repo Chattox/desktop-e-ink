@@ -20,10 +20,15 @@ reading.get_changes_and_save()
 display = Display(reading)
 
 try:
-    display.init_display()
-    display.draw_reading()
-    display.sleep(False)
-    display.cleanup()
+    # If dev arg passed, skip everything else and just draw_reading in dev mode
+    if len(sys.argv) > 1 and sys.argv[1] == "dev":
+        display.draw_reading(True)
+    else:
+        display.init_display()
+        display.draw_reading(False)
+        display.sleep(False)
+        display.cleanup()
+    
     sys.exit()
 
 except IOError as e:

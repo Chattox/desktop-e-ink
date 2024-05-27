@@ -18,15 +18,15 @@ class Reading:
         self.rain = data[0]["readings"]["rain"]
         self.wind_speed = round(float(data[0]["readings"]["wind_speed"]), 2)
         compass_dirs = {
-            0: "S",
-            45: "SW",
-            90: "W",
-            135: "NW",
-            180: "N",
-            225: "NE",
-            270: "E",
-            315: "SE",
-            360: "S",
+            0: "South",
+            45: "Southwest",
+            90: "West",
+            135: "Northwest",
+            180: "North",
+            225: "Northeast",
+            270: "East",
+            315: "Southeast",
+            360: "South",
         }
         self.wind_direction = compass_dirs[data[0]["readings"]["wind_direction"]]
         self.changes = { # These should always be either "inc", "dec", or "same"
@@ -73,5 +73,4 @@ class Reading:
             else:
                 logging.warn("Reading has not updated, possibly a missed upload?")
 
-            print(self.changes)
         
