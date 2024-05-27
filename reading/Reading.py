@@ -73,5 +73,4 @@ class Reading:
             else:
                 logging.warn("Reading has not updated, possibly a missed upload?")
 
-            print(self.changes)
         

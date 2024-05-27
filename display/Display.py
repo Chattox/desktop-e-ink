@@ -1,6 +1,10 @@
 import os
 import logging
+import pytz
 from PIL import Image, ImageDraw, ImageFont
+from astral import LocationInfo
+from astral.sun import sun
+from datetime import datetime
 from waveshare_epd import epd2in13b_V4
 
 logger = logging.getLogger(__name__)
@@ -51,6 +55,47 @@ class Display:
             bottom_left = (start[0], start[1] + 4)
             bottom_right = (start[0] + 6, start[1] + 4)
             return (top_left, top_right, bottom_left, bottom_right)
+
+    def get_weather_icon(self):
+        """Returns most appropriate weather icon based on current conditions
+        
+        Returns
+        -----
+        `Image`
+            Image object of weather icon bmp
+        """
+        sunrise, sunset = self.get_sunrise_sunset_times().values()
+
+        if self.reading.rain > 0:
+            return Image.open('./display/icons/rain.bmp')
+        elif self.reading.wind_speed > 8:
+            return Image.open('./display/icons/wind.bmp')
+        elif self.reading.luminance >= 3000:
+            return Image.open('./display/icons/sun.bmp')
+        elif self.reading.luminance < 3000 and self.reading.luminance >= 500:
+            return Image.open('./display/icons/cloudy.bmp')
+        elif self.reading.luminance < 500:
+            if sunrise < datetime.now(pytz.timezone("Europe/London")) < sunset:
+                return Image.open('./display/icons/cloud.bmp')
+            else:
+                return Image.open('./display/icons/moon.bmp')
+
+    def get_sunrise_sunset_times(self):
+        """Returns times of sunrise and sunset
+        
+        Returns
+        -----
+        `dict`
+            dict containing `sunrise` and `sunset` times
+        """
+        location = LocationInfo(os.environ.get("LATITUDE"), os.environ.get("LONGITUDE"))
+        s = sun(location.observer, date = datetime.now(), tzinfo = location.timezone)
+        
+        return {
+            "sunrise": s["sunrise"],
+            "sunset": s["sunset"]
+        }
+        
 
     def init_display(self):
         """Initialise and clear e-ink display"""
@@ -103,6 +148,10 @@ class Display:
                 self.draw_black.text((blk_l_start_x if i == 0 else blk_r_start_x, start_y + (j * line_spacing)), readingData[1][1], font = self.font_body)
                 if readingData[0] != "wind_direction":
                     self.draw_red.polygon(self.get_polygon_coords((ind_l_start_x if i == 0 else ind_r_start_x, ind_start_y + (j * line_spacing)), self.reading.changes[readingData[0]]), fill = 0)
+
+        # Add weather icon
+        self.RedImage.paste(self.get_weather_icon(), (224, 96))
+
 
         # If dev == true, display in window
         if dev:
