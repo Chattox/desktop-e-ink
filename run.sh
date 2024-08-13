@@ -1,8 +1,5 @@
 #!/bin/bash
 
-while [ true ]
-do
-    source .venv/bin/activate
-    python main.py
-    sleep 4500
-done
+cd /home/pi/Coding/desktop-e-ink
+source .venv/bin/activate
+python main.py

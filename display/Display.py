@@ -72,9 +72,9 @@ class Display:
             return Image.open('./display/icons/wind.bmp')
         elif self.reading.luminance >= 3000:
             return Image.open('./display/icons/sun.bmp')
-        elif self.reading.luminance < 3000 and self.reading.luminance >= 500:
+        elif self.reading.luminance < 3000 and self.reading.luminance >= 800:
             return Image.open('./display/icons/cloudy.bmp')
-        elif self.reading.luminance < 500:
+        elif self.reading.luminance < 800:
             if sunrise < datetime.now(pytz.timezone("Europe/London")) < sunset:
                 return Image.open('./display/icons/cloud.bmp')
             else:
