@@ -20,14 +20,14 @@ API_URL = os.environ.get("WEATHERVANE_API_URL")
 r = requests.get(url= API_URL)
 data = r.json()
 reading = Reading(data)
-reading.get_changes_and_save()
+is_new_reading = reading.get_changes_and_save()
 display = Display(reading)
 
 try:
     # If dev arg passed, skip everything else and just draw_reading in dev mode
     if len(sys.argv) > 1 and sys.argv[1] == "dev":
         display.draw_reading(True)
-    else:
+    elif is_new_reading:
         display.init_display()
         display.draw_reading(False)
         display.sleep(False)

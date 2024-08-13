@@ -70,7 +70,9 @@ class Reading:
                         "changes": self.changes
                     }
                     json.dump(new_reading, f_write, ensure_ascii = False, indent = 4)
+                return True
             else:
                 logging.warn("Reading has not updated, possibly a missed upload?")
+                return False
 
         
